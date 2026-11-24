@@ -1,0 +1,6 @@
+google-genai
+python-dotenv
+mujoco
+pillow
+opencv-python-headless
+-e ./lerobot[core_scripts,feetech]
