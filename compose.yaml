@@ -1,0 +1,41 @@
+services:
+  web:
+    build: ./picky-fe
+    ports:
+      - "${PICKY_BIND_HOST:-127.0.0.1}:${PICKY_WEB_PORT:-3000}:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - >-
+          fetch('http://127.0.0.1:3000/api/health').then(
+            response => process.exit(response.ok ? 0 : 1),
+            () => process.exit(1)
+          )
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  api:
+    build: ./picky-be
+    ports:
+      - "127.0.0.1:${PICKY_API_PORT:-8000}:8000"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import urllib.request;
+          urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=2).close()
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
