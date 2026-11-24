@@ -18,20 +18,32 @@ Agent, LeRobot, MuJoCo를 PC에서 실행하려면 Conda가 필요합니다. [Mi
 conda --version
 ```
 
-## 빠른 시작
+## 저장소와 `picky` 환경 준비
 
-웹과 API는 Docker에서 실행됩니다. Git과 [Docker Compose](https://docs.docker.com/compose/install/)가 설치되어 있고 Docker가 실행 중이면 아래 명령으로 두 서비스를 함께 시작할 수 있습니다.
+Git이 설치된 터미널에서 저장소를 받습니다.
 
 ```sh
 git clone --branch develop --recurse-submodules https://github.com/hnuu785/Picky.git
 cd Picky
-docker compose up --build --wait
 ```
 
-이미 `--recurse-submodules` 없이 clone했다면 저장소 루트에서 아래 명령으로 LeRobot을 받아옵니다.
+이미 `--recurse-submodules` 없이 clone했다면 저장소 루트에서 `git submodule update --init --recursive`를 실행해 LeRobot을 받아옵니다.
+
+저장소 루트에서 `picky` 환경을 만들면 FastAPI, Gemini SDK, MuJoCo, LeRobot이 한 번에 설치됩니다.
 
 ```sh
-git submodule update --init --recursive
+conda env create -f environment.yml
+conda activate picky
+```
+
+이미 `picky` 환경이 있다면 `conda env update -n picky -f environment.yml`로 의존성을 한 번에 갱신합니다.
+
+## 빠른 시작
+
+웹과 API는 Docker에서 실행됩니다. [Docker Compose](https://docs.docker.com/compose/install/)를 설치하고 Docker를 실행한 뒤, 저장소 루트에서 두 서비스를 함께 시작합니다.
+
+```sh
+docker compose up --build --wait
 ```
 
 - Picky 웹 화면은 <http://localhost:3000>에서 엽니다.
@@ -48,19 +60,13 @@ git submodule update --init --recursive
 | `picky-agent/` | Gemini Robotics ER 2 클라이언트 초기화 | Conda `picky` |
 | `lerobot/` | SO-101과 카메라 연결 도구 | Git 서브모듈, Conda `picky` |
 
-## 팀원 개발환경
+## Agent와 MuJoCo
 
-### Agent와 MuJoCo
-
-Conda를 사용할 수 있는 터미널에서 저장소 루트로 이동해 실행합니다.
+저장소 루트에서 MuJoCo 설치를 확인합니다.
 
 ```sh
-conda env create -f environment.yml
-conda activate picky
 python -c "import mujoco; print(mujoco.__version__)"
 ```
-
-이미 `picky` 환경이 있으면 `conda env update -n picky -f environment.yml`로 갱신합니다. 환경 파일은 `requirements.txt`의 Gemini SDK와 MuJoCo를 함께 설치합니다.
 
 Agent를 확인하려면 루트에 `.env`가 없는 경우 [.env.example](.env.example)을 `.env`로 복사하고 `GEMINI_API_KEY`를 입력합니다. 키는 로컬 `.env`에 보관합니다.
 
@@ -70,13 +76,11 @@ python picky-agent/main.py
 
 Agent 명령은 클라이언트 초기화 결과를 출력한 뒤 종료합니다.
 
-### 웹·API 소스 수정
+## 웹·API 소스 수정
 
 Docker Compose를 중지한 다음, 저장소 루트에서 FastAPI 개발 서버를 시작합니다.
 
 ```sh
-conda activate picky
-python -m pip install -r picky-be/requirements.txt
 python -m uvicorn main:app --app-dir picky-be --reload --reload-dir picky-be
 ```
 
@@ -90,11 +94,9 @@ npm run dev
 
 ### SO-101과 카메라 연결
 
-LeRobot 서브모듈을 받은 뒤, 장비를 연결할 PC의 저장소 루트에서 설치합니다.
+장비를 연결할 PC에서 `picky` 환경을 활성화한 뒤, 저장소 루트에서 LeRobot 로딩을 확인합니다.
 
 ```sh
-conda activate picky
-python -m pip install -r requirements-robot.txt
 python picky-agent/main.py --robot
 ```
 
