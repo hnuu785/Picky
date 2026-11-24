@@ -3,6 +3,12 @@ __pycache__/
 *.py[cod]
 .venv/
 
+# Next.js
+node_modules/
+.next/
+next-env.d.ts
+*.tsbuildinfo
+
 # API keys and local configuration
 .env
 .env.*

@@ -1,3 +1,3 @@
 # Picky
 
-AI Agent와 SO-101을 이용한 자연어 기반 pick & place 프로젝트.
+AI Agent와 SO-101 로봇팔을 이용한 자연어 기반 pick & place 프로젝트
